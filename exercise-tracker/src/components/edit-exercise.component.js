@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import axios from "axios";
 import "../../node_modules/react-datepicker/dist/react-datepicker.css";
 
-export default class CreateExercise extends Component {
+export default class editExercise extends Component {
   constructor(props) {
     super(props);
 
@@ -23,11 +23,20 @@ export default class CreateExercise extends Component {
   }
 
   componentDidMount() {
+    axios
+      .get("http://localhost:5000/exercises/" + this.props.match.params.id)
+      .then(response => {
+        this.setState({
+          username: response.data.username,
+          description: response.description,
+          durtaion: response.data.duration,
+          date: new Date(response.data.date)
+        });
+      });
     axios.get("http://localhost:5000/users/").then(response => {
       if (response.data.length > 0) {
         this.setState({
-          users: response.data.map(user => user.username),
-          username: response.data[0].username
+          users: response.data.map(user => user.username)
         });
       }
     });
@@ -70,7 +79,10 @@ export default class CreateExercise extends Component {
     console.log(exercise);
 
     axios
-      .post("http://localhost:5000/exercises/add", exercise)
+      .post(
+        "http://localhost:5000/exercises/update/" + this.props.match.params.id,
+        exercise
+      )
       .then(res => console.log(res.data));
 
     window.location = "/";
@@ -79,7 +91,7 @@ export default class CreateExercise extends Component {
   render() {
     return (
       <div>
-        <h3>Create New Exercise Log</h3>
+        <h3>Edit xercise Log</h3>
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
             <label>Username: </label>
@@ -131,7 +143,7 @@ export default class CreateExercise extends Component {
           <div className="form-group">
             <input
               type="submit"
-              value="Create Exercise Log"
+              value="Edit Exercise Log"
               className="btn btn-primary"
             />
           </div>
